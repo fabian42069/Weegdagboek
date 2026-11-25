@@ -23,6 +23,12 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
+    /** Tekst in de taal die in de app is gekozen (NL, EN of JP). */
+    private String tr(String nl, String en, String ja) {
+        String l = WeightWidget.lang(this);
+        return "en".equals(l) ? en : "ja".equals(l) ? ja : nl;
+    }
+
 
     private static final String ORIGIN = "https://weegdagboek.app/";
     private static final int REQ_FILE_CHOOSER = 1;
@@ -68,7 +74,7 @@ public class MainActivity extends Activity {
                     Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                     i.addCategory(Intent.CATEGORY_OPENABLE);
                     i.setType("*/*");
-                    startActivityForResult(Intent.createChooser(i, "Back-up kiezen"), REQ_FILE_CHOOSER);
+                    startActivityForResult(Intent.createChooser(i, tr("Back-up kiezen", "Choose a backup", "バックアップを選択")), REQ_FILE_CHOOSER);
                     return true;
                 } catch (Exception e) {
                     fileCallback = null;
@@ -122,9 +128,9 @@ public class MainActivity extends Activity {
             if (resultCode != RESULT_OK || data == null || data.getData() == null || text == null) return;
             try (OutputStream out = getContentResolver().openOutputStream(data.getData(), "wt")) {
                 out.write(text.getBytes(StandardCharsets.UTF_8));
-                Toast.makeText(this, "Bestand opgeslagen", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, tr("Bestand opgeslagen", "File saved", "ファイルを保存しました"), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
-                Toast.makeText(this, "Opslaan mislukt", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, tr("Opslaan mislukt", "Saving failed", "保存できませんでした"), Toast.LENGTH_LONG).show();
             }
         }
     }

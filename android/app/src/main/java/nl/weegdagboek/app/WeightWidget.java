@@ -37,7 +37,9 @@ public class WeightWidget extends AppWidgetProvider {
     // Catppuccin Macchiato
     private static final int MAUVE = 0xFFC6A0F6, PEACH = 0xFFF5A97F, SUBTEXT = 0xFFA5ADCB, SURFACE0 = 0xFF363A4F;
     private static final Locale NL = new Locale("nl", "NL");
+    private static final Locale EN = Locale.UK;
     private static final String[] MONTHS = {"jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"};
+    private static final String[] MONTHS_EN = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
     private static final class Entry {
         final LocalDate date; final double kg;
@@ -69,13 +71,19 @@ public class WeightWidget extends AppWidgetProvider {
         update(c, m, id);
     }
 
-    /** De app stuurt {"kanji":bool,"entries":[...]}; oudere versies alleen de lijst. */
-    private static boolean kanji(Context c) {
+    /**
+     * De taal van de app: "nl", "en" of "ja". De app stuurt {"lang":..,"entries":[...]};
+     * oudere versies {"kanji":bool,...} of alleen de lijst.
+     */
+    static String lang(Context c) {
         try {
             String raw = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, "[]");
-            return raw.trim().startsWith("{") && new JSONObject(raw).optBoolean("kanji", false);
+            if (!raw.trim().startsWith("{")) return "nl";
+            JSONObject o = new JSONObject(raw);
+            String l = o.optString("lang", o.optBoolean("kanji", false) ? "ja" : "nl");
+            return "en".equals(l) || "ja".equals(l) ? l : "nl";
         } catch (Exception e) {
-            return false;
+            return "nl";
         }
     }
 
@@ -113,11 +121,14 @@ public class WeightWidget extends AppWidgetProvider {
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
 
         List<Entry> list = load(c);
-        boolean k = kanji(c);
-        v.setTextViewText(R.id.empty, k ? "測定なし" : "Nog geen metingen. Tik om je eerste gewicht in te vullen.");
+        String lang = lang(c);
+        boolean k = "ja".equals(lang), en = "en".equals(lang);
+        v.setTextViewText(R.id.empty, k ? "まだ記録がありません。タップして最初の体重を入力してください。"
+                : en ? "No measurements yet. Tap to enter your first weight."
+                : "Nog geen metingen. Tik om je eerste gewicht in te vullen.");
         if (list.isEmpty()) {
             v.setTextViewText(R.id.latest, "–");
-            v.setTextViewText(R.id.sub, k ? "体重日記" : "Weegdagboek");
+            v.setTextViewText(R.id.sub, "Weegdagboek");
             v.setViewVisibility(R.id.chart, View.GONE);
             v.setViewVisibility(R.id.empty, View.VISIBLE);
             m.updateAppWidget(id, v);
@@ -127,9 +138,11 @@ public class WeightWidget extends AppWidgetProvider {
         Map<LocalDate, Week> weeks = weeks(list);
         Entry last = list.get(list.size() - 1);
         Week lastWeek = weeks.get(last.date.with(DayOfWeek.MONDAY));
-        v.setTextViewText(R.id.latest, String.format(NL, "%.1f kg", last.kg));
+        Locale num = en || k ? EN : NL;
+        v.setTextViewText(R.id.latest, String.format(num, "%.1f kg", last.kg));
         v.setTextViewText(R.id.sub, k
-                ? String.format(NL, "第%d週 · 平均 %.1f kg", lastWeek.week, lastWeek.avg())
+                ? String.format(num, "第%d週 · 平均 %.1f kg", lastWeek.week, lastWeek.avg())
+                : en ? String.format(num, "week %d · avg %.1f kg", lastWeek.week, lastWeek.avg())
                 : String.format(NL, "week %d · gem. %.1f kg", lastWeek.week, lastWeek.avg()));
         v.setViewVisibility(R.id.empty, View.GONE);
         v.setViewVisibility(R.id.chart, View.VISIBLE);
@@ -145,11 +158,12 @@ public class WeightWidget extends AppWidgetProvider {
         int chartHdp = Math.max(50, hDp - 24 - 34);
         float scale = density;
         if (chartWdp * scale > 1600f) scale = 1600f / chartWdp; // begrens bitmapgrootte (geheugenlimiet widgets)
-        v.setImageViewBitmap(R.id.chart, drawChart(list, weeks, chartWdp, chartHdp, scale, k));
+        v.setImageViewBitmap(R.id.chart, drawChart(list, weeks, chartWdp, chartHdp, scale, lang));
         m.updateAppWidget(id, v);
     }
 
-    private static Bitmap drawChart(List<Entry> all, Map<LocalDate, Week> weeks, int wDp, int hDp, float d, boolean k) {
+    private static Bitmap drawChart(List<Entry> all, Map<LocalDate, Week> weeks, int wDp, int hDp, float d, String lang) {
+        Locale num = "nl".equals(lang) ? NL : EN;
         int W = Math.round(wDp * d), H = Math.round(hDp * d);
         Bitmap bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(bmp);
@@ -184,7 +198,7 @@ public class WeightWidget extends AppWidgetProvider {
         grid.setColor(SURFACE0); grid.setStrokeWidth(1 * d);
         Paint label = new Paint(Paint.ANTI_ALIAS_FLAG);
         label.setColor(SUBTEXT); label.setTextSize(10 * d);
-        if (k) label.setTextLocale(Locale.JAPAN); // Japanse vormen van de tekens
+        if ("ja".equals(lang)) label.setTextLocale(Locale.JAPAN); // Japanse vormen van de tekens
 
         // horizontale rasterlijnen met labels
         label.setTextAlign(Paint.Align.RIGHT);
@@ -192,14 +206,14 @@ public class WeightWidget extends AppWidgetProvider {
         for (double y = yMin; y <= yMax + 1e-9 && lines < 8; y += step, lines++) {
             float py = (float) sy.applyAsDouble(y);
             cv.drawLine(L, py, W - R, py, grid);
-            cv.drawText(String.format(NL, step < 1 ? "%.1f" : "%.0f", y), L - 5 * d, py + 3.5f * d, label);
+            cv.drawText(String.format(num, step < 1 ? "%.1f" : "%.0f", y), L - 5 * d, py + 3.5f * d, label);
         }
 
         // datums onderaan: begin en eind
         label.setTextAlign(Paint.Align.LEFT);
-        cv.drawText(shortDate(LocalDate.ofEpochDay(x0), k), L, H - 3 * d, label);
+        cv.drawText(shortDate(LocalDate.ofEpochDay(x0), lang), L, H - 3 * d, label);
         label.setTextAlign(Paint.Align.RIGHT);
-        cv.drawText(shortDate(LocalDate.ofEpochDay(x1), k), W - R, H - 3 * d, label);
+        cv.drawText(shortDate(LocalDate.ofEpochDay(x1), lang), W - R, H - 3 * d, label);
 
         // dagelijkse lijn, onderbroken bij gaten van meer dan 3 dagen
         Paint daily = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -238,8 +252,8 @@ public class WeightWidget extends AppWidgetProvider {
         return bmp;
     }
 
-    private static String shortDate(LocalDate d, boolean kanji) {
-        if (kanji) return d.getMonthValue() + "月" + d.getDayOfMonth() + "日";
-        return d.getDayOfMonth() + " " + MONTHS[d.getMonthValue() - 1];
+    private static String shortDate(LocalDate d, String lang) {
+        if ("ja".equals(lang)) return d.getMonthValue() + "月" + d.getDayOfMonth() + "日";
+        return d.getDayOfMonth() + " " + ("en".equals(lang) ? MONTHS_EN : MONTHS)[d.getMonthValue() - 1];
     }
 }

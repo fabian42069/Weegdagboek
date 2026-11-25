@@ -1,13 +1,13 @@
 # Weegdagboek
 
-Android app to log your weight once a day (Dutch interface).
+Android app to log your weight once a day, in Dutch, English or Japanese.
 
 - Chart with daily weight and weekly average
 - Weekly averages table
 - Home-screen widget
 - Optional Nextcloud sync
 - JSON/CSV backup
-- Kanji mode
+- Choose your language in the menu: Dutch, English or Japanese
 
 <p>
   <img src="docs/screenshots/overzicht.jpg" alt="Main screen" width="200">

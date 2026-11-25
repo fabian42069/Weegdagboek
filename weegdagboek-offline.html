@@ -118,11 +118,9 @@ section.view { display: flex; }
 .nav-item[aria-current="page"] { background: var(--accent-soft); }
 .nav-ico { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; background: var(--accent-soft); color: var(--accent); }
 .drawer-sep { height: 1px; background: var(--line); margin: 8px 8px; }
-.switch { margin-left: auto; flex: none; width: 44px; height: 26px; border-radius: 999px; background: var(--line); position: relative; }
-.switch .knob { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--muted); }
-#kanjiToggle[aria-checked="true"] .switch { background: var(--accent); }
-#kanjiToggle[aria-checked="true"] .knob { left: 21px; background: var(--on-accent); }
-@media (prefers-reduced-motion: no-preference) { .switch .knob { transition: left .15s, background .15s; } }
+.lang-row { cursor: default; }
+.lang-seg { margin-left: auto; flex: none; }
+.lang-seg button { padding: 5px 10px; font-weight: 700; }
 .nav-ico.kanji { font-size: 21px; font-weight: 700; line-height: 1; font-family: "Noto Sans CJK JP", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif; }
 @media (prefers-reduced-motion: no-preference) {
   button { transition: background .15s, color .15s; }
@@ -135,107 +133,107 @@ section.view { display: flex; }
 
 <div class="wrap">
   <header class="top">
-    <button type="button" class="menu-btn" id="menuBtn" aria-label="Menu openen" aria-controls="drawer" aria-expanded="false">
+    <button type="button" class="menu-btn" id="menuBtn" aria-label="Menu openen" data-t-aria="openMenu" aria-controls="drawer" aria-expanded="false">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
     <div class="titles">
       <h1>Weegdagboek</h1>
-      <p class="sub" id="homeSub">Elke dag op hetzelfde moment wegen. Het weekgemiddelde laat de echte trend zien.</p>
+      <p class="sub" id="homeSub" data-t="sub">Elke dag op hetzelfde moment wegen. Het weekgemiddelde laat de echte trend zien.</p>
     </div>
   </header>
   <button type="button" class="back-btn" id="backBtn" hidden>
     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span data-k="概要">Overzicht</span>
+    <span data-t="overview">Overzicht</span>
   </button>
 
   <p class="notice" id="status" hidden></p>
 
   <div class="view" data-view="home">
   <section class="panel" aria-labelledby="h-entry">
-    <h2 id="h-entry" data-k="今日の体重">Gewicht van vandaag</h2>
+    <h2 id="h-entry" data-t="todayWeight">Gewicht van vandaag</h2>
     <form id="entry" novalidate>
-      <label for="kg"><span data-k="体重 (kg)">Gewicht (kg)</span>
-        <input id="kg" name="kg" type="text" inputmode="decimal" autocomplete="off" placeholder="78,4">
+      <label for="kg"><span data-t="weightKg">Gewicht (kg)</span>
+        <input id="kg" name="kg" type="text" inputmode="decimal" autocomplete="off" placeholder="78,4" data-t-ph="kgPlaceholder">
       </label>
-      <label for="date"><span data-k="日付">Datum</span>
+      <label for="date"><span data-t="date">Datum</span>
         <input id="date" name="date" type="date">
       </label>
-      <button class="btn-primary" id="save" type="submit" data-k="保存">Opslaan</button>
+      <button class="btn-primary" id="save" type="submit" data-t="save">Opslaan</button>
       <p class="msg" id="msg" aria-live="polite"></p>
     </form>
   </section>
 
   <section class="panel" aria-labelledby="h-now" id="statsPanel" hidden>
-    <h2 id="h-now" hidden>Overzicht</h2>
+    <h2 id="h-now" hidden data-t="overview">Overzicht</h2>
     <div class="stats">
-      <div class="stat"><span class="k" data-k="最新">Laatste</span><span class="v" id="sLast">–</span><span class="d" id="sLastD"></span></div>
-      <div class="stat"><span class="k" data-k="今週">Deze week</span><span class="v" id="sWeek">–</span><span class="d" id="sWeekD"></span></div>
-      <div class="stat"><span class="k" data-k="開始以来">Sinds start</span><span class="v" id="sTotal">–</span><span class="d" id="sTotalD"></span></div>
+      <div class="stat"><span class="k" data-t="latest">Laatste</span><span class="v" id="sLast">–</span><span class="d" id="sLastD"></span></div>
+      <div class="stat"><span class="k" data-t="thisWeek">Deze week</span><span class="v" id="sWeek">–</span><span class="d" id="sWeekD"></span></div>
+      <div class="stat"><span class="k" data-t="sinceStart">Sinds start</span><span class="v" id="sTotal">–</span><span class="d" id="sTotalD"></span></div>
     </div>
   </section>
 
   <section class="panel" aria-labelledby="h-chart">
     <div class="chart-head">
-      <h2 id="h-chart" data-k="推移">Verloop</h2>
-      <div class="seg" role="group" aria-label="Periode">
-        <button type="button" data-range="30" aria-pressed="false" id="r30" data-k="30日">30 d</button>
-        <button type="button" data-range="90" aria-pressed="true" id="r90" data-k="90日">90 d</button>
-        <button type="button" data-range="0" aria-pressed="false" id="rAll" data-k="全部">Alles</button>
+      <h2 id="h-chart" data-t="progress">Verloop</h2>
+      <div class="seg" role="group" aria-label="Periode" data-t-aria="period">
+        <button type="button" data-range="30" aria-pressed="false" id="r30" data-t="d30">30 d</button>
+        <button type="button" data-range="90" aria-pressed="true" id="r90" data-t="d90">90 d</button>
+        <button type="button" data-range="0" aria-pressed="false" id="rAll" data-t="all">Alles</button>
       </div>
     </div>
-    <div class="legend"><span><i style="background:var(--accent)"></i><span data-k="毎日">Dagelijks</span></span><span><i style="background:var(--week)"></i><span data-k="週平均">Weekgemiddelde</span></span></div>
-    <div class="readout" id="readout">Tik op de grafiek om een dag te bekijken.</div>
+    <div class="legend"><span><i style="background:var(--accent)"></i><span data-t="daily">Dagelijks</span></span><span><i style="background:var(--week)"></i><span data-t="weekAvg">Weekgemiddelde</span></span></div>
+    <div class="readout" id="readout" data-t="tapChart">Tik op de grafiek om een dag te bekijken.</div>
     <div id="chartBox"></div>
   </section>
   </div>
 
   <section class="panel view" data-view="weken" aria-labelledby="h-weeks" hidden>
-    <h2 id="h-weeks" data-k="週平均">Weekgemiddelden</h2>
+    <h2 id="h-weeks" data-t="weekAvgs">Weekgemiddelden</h2>
     <div class="tbl-wrap" id="weeksBox"></div>
   </section>
 
   <section class="panel view" data-view="metingen" aria-labelledby="h-list" hidden>
-    <h2 id="h-list" data-k="測定">Metingen</h2>
+    <h2 id="h-list" data-t="measurements">Metingen</h2>
     <div class="tbl-wrap" id="listBox"></div>
   </section>
 
   <section class="panel view" data-view="nextcloud" aria-labelledby="h-nc" hidden>
     <h2 id="h-nc">Nextcloud</h2>
-    <p class="hint" id="ncAppOnly" hidden>Synchroniseren met Nextcloud werkt in de Android-app. In de browser kun je hieronder handmatig een back-up maken.</p>
+    <p class="hint" id="ncAppOnly" hidden data-t="ncAppOnly">Synchroniseren met Nextcloud werkt in de Android-app. In de browser kun je hieronder handmatig een back-up maken.</p>
     <form id="ncForm" class="ncform" novalidate>
       <div id="ncSetup" class="ncgrid">
-        <p class="hint">Je metingen worden opgeslagen als <code>weegdagboek.json</code> in een map op je Nextcloud. Je logt in via je browser; de app krijgt daarna een eigen app-wachtwoord dat versleuteld op je telefoon wordt bewaard.</p>
-        <label for="ncServer">Server
+        <p class="hint" data-t-html="ncIntro">Je metingen worden opgeslagen als <code>weegdagboek.json</code> in een map op je Nextcloud. Je logt in via je browser; de app krijgt daarna een eigen app-wachtwoord dat versleuteld op je telefoon wordt bewaard.</p>
+        <label for="ncServer"><span data-t="server">Server</span>
           <input id="ncServer" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://cloud.jouwdomein.nl">
         </label>
-        <label for="ncFolder">Map in Nextcloud
+        <label for="ncFolder"><span data-t="ncFolder">Map in Nextcloud</span>
           <input id="ncFolder" type="text" autocapitalize="off" spellcheck="false" value="Weegdagboek">
         </label>
-        <button class="btn-primary" id="ncConnect" type="submit">Inloggen bij Nextcloud</button>
+        <button class="btn-primary" id="ncConnect" type="submit" data-t="ncLogin">Inloggen bij Nextcloud</button>
       </div>
     </form>
     <div id="ncWaiting" class="ncgrid" hidden>
-      <p class="hint">Log in je browser in bij Nextcloud en geef het Weegdagboek toegang. Kom daarna terug naar deze app; de koppeling wordt dan vanzelf afgerond.</p>
-      <div class="backup"><button type="button" id="ncCancel">Annuleren</button></div>
+      <p class="hint" data-t="ncWaitingHint">Log in je browser in bij Nextcloud en geef het Weegdagboek toegang. Kom daarna terug naar deze app; de koppeling wordt dan vanzelf afgerond.</p>
+      <div class="backup"><button type="button" id="ncCancel" data-t="cancel">Annuleren</button></div>
     </div>
     <div id="ncLinked" class="ncgrid" hidden>
       <p class="hint" id="ncWhere"></p>
       <p class="hint" id="ncLast"></p>
       <div class="backup">
-        <button type="button" id="ncSyncNow">Nu synchroniseren</button>
-        <button type="button" id="ncUnlink">Ontkoppelen</button>
+        <button type="button" id="ncSyncNow" data-t="syncNow">Nu synchroniseren</button>
+        <button type="button" id="ncUnlink" data-t="unlink">Ontkoppelen</button>
       </div>
     </div>
     <p class="msg" id="ncMsg" aria-live="polite"></p>
   </section>
 
   <section class="panel view" data-view="backup" aria-labelledby="h-backup" hidden>
-    <h2 id="h-backup">Back-up</h2>
-    <p class="hint">Je metingen staan alleen op dit apparaat, in deze browser. Maak af en toe een back-up, zodat je niets kwijtraakt als de browsergegevens worden gewist.</p>
+    <h2 id="h-backup" data-t="backup">Back-up</h2>
+    <p class="hint" data-t="backupHint">Je metingen staan alleen op dit apparaat, in deze browser. Maak af en toe een back-up, zodat je niets kwijtraakt als de browsergegevens worden gewist.</p>
     <div class="backup">
-      <button type="button" id="exportJson">Back-up opslaan</button>
-      <button type="button" id="exportCsv">Exporteren als CSV</button>
-      <label class="file" for="importFile">Back-up terugzetten<input type="file" id="importFile" accept=".json,application/json"></label>
+      <button type="button" id="exportJson" data-t="saveBackup">Back-up opslaan</button>
+      <button type="button" id="exportCsv" data-t="exportCsv">Exporteren als CSV</button>
+      <label class="file" for="importFile"><span data-t="restoreBackup">Back-up terugzetten</span><input type="file" id="importFile" accept=".json,application/json"></label>
     </div>
     <p class="msg" id="backupMsg" aria-live="polite"></p>
   </section>
@@ -245,21 +243,25 @@ section.view { display: flex; }
 <nav class="drawer" id="drawer" aria-label="Menu" aria-hidden="true">
   <p class="drawer-title">Weegdagboek</p>
   <button type="button" class="nav-item" data-go="metingen">
-    <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.5 8v3M10 8v4.5M13.5 8v3M17 8v4.5"/></g></svg></span><span data-k="測定">Metingen</span>
+    <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.5 8v3M10 8v4.5M13.5 8v3M17 8v4.5"/></g></svg></span><span data-t="measurements">Metingen</span>
   </button>
   <button type="button" class="nav-item" data-go="weken">
-    <span class="nav-ico kanji" lang="ja" aria-hidden="true">週</span><span data-k="週平均">Weekgemiddelden</span>
+    <span class="nav-ico kanji" lang="ja" aria-hidden="true">週</span><span data-t="weekAvgs">Weekgemiddelden</span>
   </button>
   <button type="button" class="nav-item" data-go="nextcloud">
     <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24"><g fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="4.3" stroke-width="2.2"/><circle cx="4.2" cy="12" r="2.4" stroke-width="1.8"/><circle cx="19.8" cy="12" r="2.4" stroke-width="1.8"/></g></svg></span>Nextcloud
   </button>
   <button type="button" class="nav-item" data-go="backup">
-    <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.1 13.5A8 8 0 1 0 6 6.3L3.5 8.8"/><path d="M3.5 4.5v4.3h4.3"/><path d="M12 8v4.2l2.8 1.8"/></g></svg></span>Back-up
+    <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.1 13.5A8 8 0 1 0 6 6.3L3.5 8.8"/><path d="M3.5 4.5v4.3h4.3"/><path d="M12 8v4.2l2.8 1.8"/></g></svg></span><span data-t="backup">Back-up</span>
   </button>
   <div class="drawer-sep" role="presentation"></div>
-  <button type="button" class="nav-item" id="kanjiToggle" role="switch" aria-checked="false">
-    <span class="nav-ico kanji" lang="ja" aria-hidden="true">漢</span><span>Kanji</span><span class="switch" aria-hidden="true"><span class="knob"></span></span>
-  </button>
+  <div class="nav-item lang-row">
+    <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z"/></g></svg></span>
+    <span data-t="language">Taal</span>
+    <div class="seg lang-seg" role="group" aria-label="Taal" data-t-aria="language">
+      <button type="button" data-lang="nl" aria-pressed="true">NL</button><button type="button" data-lang="en" aria-pressed="false">EN</button><button type="button" data-lang="ja" aria-pressed="false" lang="ja">JP</button>
+    </div>
+  </div>
 </nav>
 
 <script>
@@ -269,35 +271,224 @@ section.view { display: flex; }
   var db = null, col = null, loaded = false, range = 90, listLimit = 14, pendingDelete = null;
 
   var $ = function (id) { return document.getElementById(id); };
-  var fmt = function (n, d) { return n.toLocaleString("nl-NL", { minimumFractionDigits: d == null ? 1 : d, maximumFractionDigits: d == null ? 1 : d }); };
-  var months = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
-  var days = ["zo","ma","di","wo","do","vr","za"];
+  /* ---------- taal: NL, EN of JP (keuze in het menu) ---------- */
+  var LANG_KEY = "weegdagboek.lang", KANJI_KEY = "weegdagboek.kanji";
+  var lang = "nl";
+  try {
+    lang = localStorage.getItem(LANG_KEY) || (localStorage.getItem(KANJI_KEY) === "1" ? "ja" : "nl"); // de oude kanji-stand wordt JP
+    if (["nl", "en", "ja"].indexOf(lang) < 0) lang = "nl";
+  } catch (e) {}
+  var LOCALE = { nl: "nl-NL", en: "en-GB", ja: "ja-JP" };
+  var fmt = function (n, d) { return n.toLocaleString(LOCALE[lang], { minimumFractionDigits: d == null ? 1 : d, maximumFractionDigits: d == null ? 1 : d }); };
+  var MONTHS = {
+    nl: ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"],
+    en: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+  };
+  var DAYS = { nl: ["zo","ma","di","wo","do","vr","za"], en: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], ja: ["日","月","火","水","木","金","土"] };
+  var STR = {
+    nl: {
+      openMenu: "Menu openen", sub: "Elke dag op hetzelfde moment wegen. Het weekgemiddelde laat de echte trend zien.",
+      overview: "Overzicht", todayWeight: "Gewicht van vandaag", weightKg: "Gewicht (kg)", kgPlaceholder: "78,4", date: "Datum", save: "Opslaan",
+      latest: "Laatste", thisWeek: "Deze week", sinceStart: "Sinds start", progress: "Verloop", period: "Periode",
+      d30: "30 d", d90: "90 d", all: "Alles", daily: "Dagelijks", weekAvg: "Weekgemiddelde", weekAvgs: "Weekgemiddelden",
+      measurements: "Metingen", tapChart: "Tik op de grafiek om een dag te bekijken.", language: "Taal",
+      ncAppOnly: "Synchroniseren met Nextcloud werkt in de Android-app. In de browser kun je hieronder handmatig een back-up maken.",
+      ncIntro: "Je metingen worden opgeslagen als <code>weegdagboek.json</code> in een map op je Nextcloud. Je logt in via je browser; de app krijgt daarna een eigen app-wachtwoord dat versleuteld op je telefoon wordt bewaard.",
+      server: "Server", ncFolder: "Map in Nextcloud", ncLogin: "Inloggen bij Nextcloud",
+      ncWaitingHint: "Log in je browser in bij Nextcloud en geef het Weegdagboek toegang. Kom daarna terug naar deze app; de koppeling wordt dan vanzelf afgerond.",
+      cancel: "Annuleren", syncNow: "Nu synchroniseren", unlink: "Ontkoppelen",
+      backup: "Back-up", backupHint: "Je metingen staan alleen op dit apparaat, in deze browser. Maak af en toe een back-up, zodat je niets kwijtraakt als de browsergegevens worden gewist.",
+      saveBackup: "Back-up opslaan", exportCsv: "Exporteren als CSV", restoreBackup: "Back-up terugzetten",
+      weekName: function (n) { return "Week " + n; },
+      vsPrev: function (d) { return d + " vs vorige"; },
+      weekCount: function (w, n) { return "week " + w + " · " + n + "×"; },
+      vsWeek: function (d, w) { return d + " vs wk " + w; },
+      since: function (d) { return "sinds " + d; },
+      noMeasurements: "Nog geen metingen", loadingMeasurements: "Metingen laden…",
+      firstHint: "Vul hierboven je eerste gewicht in. Na een paar dagen verschijnt hier je lijn.",
+      chartLabel: "Grafiek van dagelijks gewicht en weekgemiddelde",
+      readoutWeek: function (w) { return "  ·  gem. week " + w + ": "; },
+      weeksEmpty: "Zodra je weegt, staat hier per week (ma–zo) je gemiddelde.", loading: "Laden…",
+      weekHeads: ["Week", "Gemiddeld", "Verschil", "Metingen"],
+      listEmpty: "Nog niets opgeslagen.", deleteLabel: function (d) { return "Verwijder meting van " + d; },
+      sure: "Zeker?", del: "Verwijder", showMore: "Toon meer",
+      errWeight: "Vul een gewicht in kilo's in, bijvoorbeeld 78,4.", errDate: "Kies een datum.", errFuture: "Die datum ligt in de toekomst.",
+      errStorage: "Opslaan mislukt: deze browser staat lokale opslag niet toe (privévenster?).",
+      saved: function (existed, kg, d) { return (existed ? "Bijgewerkt: " : "Opgeslagen: ") + kg + " kg op " + d + "."; },
+      delFailed: "Verwijderen mislukt.", deleted: function (d) { return "Meting van " + d + " verwijderd."; },
+      noStorage: "Deze browser staat lokale opslag niet toe. Metingen worden niet bewaard.",
+      nothingToSave: "Er is nog niets om op te slaan.", backupReady: function (n) { return "Back-up met " + n + " metingen klaargezet."; },
+      nothingToExport: "Er is nog niets om te exporteren.", csvDone: "CSV gedownload. Je kunt het openen in Excel of Numbers.", csvHeader: "datum;gewicht_kg;week",
+      restoreFailed: "Terugzetten mislukt: lokale opslag is niet beschikbaar.",
+      restored: function (n) { return "Back-up ingelezen. Je hebt nu " + n + " metingen."; },
+      notBackup: "Dit bestand is geen geldige back-up van het Weegdagboek.",
+      ncWhere: function (u, f, srv) { return u + " · map " + f + " · " + srv; },
+      ncLast: function (t) { return "Laatst gesynchroniseerd: " + t; }, ncNever: "Nog niet gesynchroniseerd.",
+      ncOffline: "Geen verbinding met de server. Je metingen staan veilig op je telefoon en gaan mee bij de volgende synchronisatie.",
+      ncInvalid: "De koppeling is niet meer geldig. Ontkoppel en log opnieuw in.",
+      ncDenied: "Nextcloud weigert de toegang. Is het app-wachtwoord ingetrokken? Ontkoppel en log opnieuw in.",
+      ncFolderErr: function (f) { return "De map \"" + f + "\" kon niet worden aangemaakt in je Nextcloud. Controleer of de naam klopt en of je daar mag schrijven."; },
+      ncServerErr: function (c) { return "De server gaf een foutmelding (" + c + ")."; },
+      ncSyncing: "Bezig met synchroniseren…", ncBroken: "Het bestand weegdagboek.json op je server is beschadigd. Ik heb niets overschreven.",
+      ncBoth: "Gesynchroniseerd in beide richtingen.", ncDown: "Nieuwe metingen van je server opgehaald.", ncUp: "Opgeslagen op je Nextcloud.",
+      ncUpToDate: "Alles is al bijgewerkt.", ncFailed: "Synchroniseren mislukt.",
+      login: {
+        not_nextcloud: "Op dit adres is geen Nextcloud gevonden. Controleer het serveradres.",
+        network: "De server is niet bereikbaar. Controleer het adres en je verbinding.",
+        timeout: "Inloggen duurde te lang (meer dan 20 minuten). Probeer het opnieuw.",
+        host: "De server stuurde een onverwacht adres terug. Uit voorzorg is het inloggen gestopt.",
+        failed: "Inloggen is niet gelukt. Probeer het opnieuw."
+      },
+      ncRevoked: "Ontkoppeld en het app-wachtwoord is ingetrokken in Nextcloud. Je metingen staan nog op je telefoon en je server.",
+      ncLocalOnly: "Ontkoppeld op je telefoon. Intrekken in Nextcloud lukte niet; verwijder \"Weegdagboek\" zelf bij Instellingen › Beveiliging.",
+      ncRelogin: "De koppeling is vernieuwd en veiliger gemaakt. Log één keer opnieuw in bij Nextcloud.",
+      ncNeedServer: "Vul het adres van je Nextcloud in.",
+      ncHttp: "Let op: met http:// gaat je app-wachtwoord onversleuteld over het netwerk. Tik nogmaals om toch door te gaan, of gebruik https://.",
+      ncConnecting: "Verbinden met je Nextcloud…", ncCancelled: "Inloggen geannuleerd.", ncUnlinkSure: "Zeker? Tik nogmaals", ncUnlinking: "Bezig met ontkoppelen…"
+    },
+    en: {
+      openMenu: "Open menu", sub: "Weigh yourself at the same time every day. The weekly average shows the real trend.",
+      overview: "Overview", todayWeight: "Today's weight", weightKg: "Weight (kg)", kgPlaceholder: "78.4", date: "Date", save: "Save",
+      latest: "Latest", thisWeek: "This week", sinceStart: "Since start", progress: "Progress", period: "Period",
+      d30: "30 d", d90: "90 d", all: "All", daily: "Daily", weekAvg: "Weekly average", weekAvgs: "Weekly averages",
+      measurements: "Measurements", tapChart: "Tap the chart to see a day.", language: "Language",
+      ncAppOnly: "Syncing with Nextcloud works in the Android app. In the browser you can make a backup by hand below.",
+      ncIntro: "Your measurements are saved as <code>weegdagboek.json</code> in a folder on your Nextcloud. You log in through your browser; the app then gets its own app password, which is stored encrypted on your phone.",
+      server: "Server", ncFolder: "Folder in Nextcloud", ncLogin: "Log in to Nextcloud",
+      ncWaitingHint: "Log in to Nextcloud in your browser and give Weegdagboek access. Then come back to this app; the link is completed automatically.",
+      cancel: "Cancel", syncNow: "Sync now", unlink: "Unlink",
+      backup: "Backup", backupHint: "Your measurements are only stored on this device, in this browser. Make a backup now and then, so you don't lose anything if the browser data is cleared.",
+      saveBackup: "Save backup", exportCsv: "Export as CSV", restoreBackup: "Restore backup",
+      weekName: function (n) { return "Week " + n; },
+      vsPrev: function (d) { return d + " vs previous"; },
+      weekCount: function (w, n) { return "week " + w + " · " + n + "×"; },
+      vsWeek: function (d, w) { return d + " vs wk " + w; },
+      since: function (d) { return "since " + d; },
+      noMeasurements: "No measurements yet", loadingMeasurements: "Loading measurements…",
+      firstHint: "Enter your first weight above. After a few days your line appears here.",
+      chartLabel: "Chart of daily weight and weekly average",
+      readoutWeek: function (w) { return "  ·  avg. week " + w + ": "; },
+      weeksEmpty: "Once you weigh yourself, your average per week (Mon–Sun) appears here.", loading: "Loading…",
+      weekHeads: ["Week", "Average", "Change", "Weigh-ins"],
+      listEmpty: "Nothing saved yet.", deleteLabel: function (d) { return "Delete the measurement of " + d; },
+      sure: "Sure?", del: "Delete", showMore: "Show more",
+      errWeight: "Enter a weight in kilograms, for example 78.4.", errDate: "Choose a date.", errFuture: "That date is in the future.",
+      errStorage: "Saving failed: this browser doesn't allow local storage (private window?).",
+      saved: function (existed, kg, d) { return (existed ? "Updated: " : "Saved: ") + kg + " kg on " + d + "."; },
+      delFailed: "Deleting failed.", deleted: function (d) { return "Measurement of " + d + " deleted."; },
+      noStorage: "This browser doesn't allow local storage. Measurements won't be kept.",
+      nothingToSave: "There's nothing to save yet.", backupReady: function (n) { return "Backup with " + n + " measurements ready."; },
+      nothingToExport: "There's nothing to export yet.", csvDone: "CSV downloaded. You can open it in Excel or Numbers.", csvHeader: "date;weight_kg;week",
+      restoreFailed: "Restoring failed: local storage is not available.",
+      restored: function (n) { return "Backup restored. You now have " + n + " measurements."; },
+      notBackup: "This file is not a valid Weegdagboek backup.",
+      ncWhere: function (u, f, srv) { return u + " · folder " + f + " · " + srv; },
+      ncLast: function (t) { return "Last synced: " + t; }, ncNever: "Not synced yet.",
+      ncOffline: "No connection to the server. Your measurements are safe on your phone and will be included in the next sync.",
+      ncInvalid: "The link is no longer valid. Unlink and log in again.",
+      ncDenied: "Nextcloud refuses access. Was the app password revoked? Unlink and log in again.",
+      ncFolderErr: function (f) { return "The folder \"" + f + "\" couldn't be created on your Nextcloud. Check that the name is right and that you may write there."; },
+      ncServerErr: function (c) { return "The server returned an error (" + c + ")."; },
+      ncSyncing: "Syncing…", ncBroken: "The file weegdagboek.json on your server is damaged. Nothing was overwritten.",
+      ncBoth: "Synced in both directions.", ncDown: "New measurements fetched from your server.", ncUp: "Saved to your Nextcloud.",
+      ncUpToDate: "Everything is up to date.", ncFailed: "Syncing failed.",
+      login: {
+        not_nextcloud: "No Nextcloud was found at this address. Check the server address.",
+        network: "The server can't be reached. Check the address and your connection.",
+        timeout: "Logging in took too long (more than 20 minutes). Please try again.",
+        host: "The server sent back an unexpected address. Logging in was stopped to be safe.",
+        failed: "Logging in didn't work. Please try again."
+      },
+      ncRevoked: "Unlinked, and the app password was revoked in Nextcloud. Your measurements are still on your phone and your server.",
+      ncLocalOnly: "Unlinked on your phone. Revoking it in Nextcloud didn't work; remove \"Weegdagboek\" yourself under Settings › Security.",
+      ncRelogin: "The link was renewed and made more secure. Please log in to Nextcloud once more.",
+      ncNeedServer: "Enter the address of your Nextcloud.",
+      ncHttp: "Note: with http:// your app password travels over the network unencrypted. Tap again to continue anyway, or use https://.",
+      ncConnecting: "Connecting to your Nextcloud…", ncCancelled: "Login cancelled.", ncUnlinkSure: "Sure? Tap again", ncUnlinking: "Unlinking…"
+    },
+    ja: {
+      openMenu: "メニューを開く", sub: "毎日同じ時間に体重を量りましょう。週平均が本当の傾向を示します。",
+      overview: "概要", todayWeight: "今日の体重", weightKg: "体重 (kg)", kgPlaceholder: "78.4", date: "日付", save: "保存",
+      latest: "最新", thisWeek: "今週", sinceStart: "開始以来", progress: "推移", period: "期間",
+      d30: "30日", d90: "90日", all: "全部", daily: "毎日", weekAvg: "週平均", weekAvgs: "週平均",
+      measurements: "測定", tapChart: "グラフをタップすると、その日の記録が見られます。", language: "言語",
+      ncAppOnly: "Nextcloudとの同期はAndroidアプリで使えます。ブラウザでは、下から手動でバックアップを作成できます。",
+      ncIntro: "記録はNextcloud上のフォルダに <code>weegdagboek.json</code> として保存されます。ブラウザでログインすると、アプリ専用のパスワードが発行され、暗号化してスマートフォンに保存されます。",
+      server: "サーバー", ncFolder: "Nextcloudのフォルダ", ncLogin: "Nextcloudにログイン",
+      ncWaitingHint: "ブラウザでNextcloudにログインし、Weegdagboekへのアクセスを許可してください。その後このアプリに戻ると、連携が自動的に完了します。",
+      cancel: "キャンセル", syncNow: "今すぐ同期", unlink: "連携を解除",
+      backup: "バックアップ", backupHint: "記録はこの端末のこのブラウザにだけ保存されています。ブラウザのデータが消えても困らないよう、ときどきバックアップを作成してください。",
+      saveBackup: "バックアップを保存", exportCsv: "CSVで書き出す", restoreBackup: "バックアップを復元",
+      weekName: function (n) { return "第" + n + "週"; },
+      vsPrev: function (d) { return "前回比 " + d; },
+      weekCount: function (w, n) { return "第" + w + "週 · " + n + "回"; },
+      vsWeek: function (d, w) { return "第" + w + "週比 " + d; },
+      since: function (d) { return d + "から"; },
+      noMeasurements: "まだ記録がありません", loadingMeasurements: "記録を読み込み中…",
+      firstHint: "上に最初の体重を入力してください。数日後、ここにグラフが表示されます。",
+      chartLabel: "毎日の体重と週平均のグラフ",
+      readoutWeek: function (w) { return "  ·  第" + w + "週平均: "; },
+      weeksEmpty: "体重を記録すると、ここに週ごと(月〜日)の平均が表示されます。", loading: "読み込み中…",
+      weekHeads: ["週", "平均", "差", "測定"],
+      listEmpty: "まだ何も保存されていません。", deleteLabel: function (d) { return d + "の記録を削除"; },
+      sure: "確認?", del: "削除", showMore: "もっと見る",
+      errWeight: "体重をキログラムで入力してください(例: 78.4)。", errDate: "日付を選んでください。", errFuture: "その日付は未来です。",
+      errStorage: "保存できませんでした。このブラウザはローカル保存を許可していません(プライベートウィンドウ?)。",
+      saved: function (existed, kg, d) { return d + "の体重 " + kg + " kg を" + (existed ? "更新しました。" : "保存しました。"); },
+      delFailed: "削除できませんでした。", deleted: function (d) { return d + "の記録を削除しました。"; },
+      noStorage: "このブラウザはローカル保存を許可していません。記録は保存されません。",
+      nothingToSave: "まだ保存するものがありません。", backupReady: function (n) { return n + "件の記録のバックアップを用意しました。"; },
+      nothingToExport: "まだ書き出すものがありません。", csvDone: "CSVをダウンロードしました。ExcelやNumbersで開けます。", csvHeader: "date;weight_kg;week",
+      restoreFailed: "復元できませんでした。ローカル保存が使えません。",
+      restored: function (n) { return "バックアップを読み込みました。記録は" + n + "件です。"; },
+      notBackup: "このファイルはWeegdagboekの有効なバックアップではありません。",
+      ncWhere: function (u, f, srv) { return u + " · フォルダ " + f + " · " + srv; },
+      ncLast: function (t) { return "最終同期: " + t; }, ncNever: "まだ同期していません。",
+      ncOffline: "サーバーに接続できません。記録はスマートフォンに安全に保存されており、次回の同期で送られます。",
+      ncInvalid: "連携が無効になっています。連携を解除して、もう一度ログインしてください。",
+      ncDenied: "Nextcloudがアクセスを拒否しました。アプリパスワードが取り消されていませんか?連携を解除して、もう一度ログインしてください。",
+      ncFolderErr: function (f) { return "Nextcloudにフォルダ「" + f + "」を作成できませんでした。名前が正しいか、書き込み権限があるか確認してください。"; },
+      ncServerErr: function (c) { return "サーバーがエラーを返しました(" + c + ")。"; },
+      ncSyncing: "同期中…", ncBroken: "サーバー上のweegdagboek.jsonが壊れています。何も上書きしていません。",
+      ncBoth: "双方向に同期しました。", ncDown: "サーバーから新しい記録を取得しました。", ncUp: "Nextcloudに保存しました。",
+      ncUpToDate: "すべて最新です。", ncFailed: "同期できませんでした。",
+      login: {
+        not_nextcloud: "このアドレスにNextcloudが見つかりません。サーバーのアドレスを確認してください。",
+        network: "サーバーに接続できません。アドレスと接続を確認してください。",
+        timeout: "ログインに時間がかかりすぎました(20分以上)。もう一度お試しください。",
+        host: "サーバーから予期しないアドレスが返されました。安全のためログインを中止しました。",
+        failed: "ログインできませんでした。もう一度お試しください。"
+      },
+      ncRevoked: "連携を解除し、Nextcloudのアプリパスワードも取り消しました。記録はスマートフォンとサーバーに残っています。",
+      ncLocalOnly: "スマートフォン上の連携を解除しました。Nextcloudでの取り消しはできませんでした。「設定 › セキュリティ」で「Weegdagboek」を削除してください。",
+      ncRelogin: "連携がより安全な方式に更新されました。Nextcloudにもう一度ログインしてください。",
+      ncNeedServer: "Nextcloudのアドレスを入力してください。",
+      ncHttp: "注意: http:// ではアプリパスワードが暗号化されずに送信されます。それでも続ける場合はもう一度タップするか、https:// を使ってください。",
+      ncConnecting: "Nextcloudに接続中…", ncCancelled: "ログインをキャンセルしました。", ncUnlinkSure: "本当に?もう一度タップ", ncUnlinking: "連携を解除中…"
+    }
+  };
+  var L = STR[lang];
 
   function pad(n) { return (n < 10 ? "0" : "") + n; }
   function toKey(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
   function fromKey(k) { var p = k.split("-"); return new Date(+p[0], +p[1] - 1, +p[2], 12); }
   function dayNum(k) { var d = fromKey(k); return Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000); }
-  /* Kanji-weergave: korte termen, datums en weeknummers in kanji; uitlegzinnen blijven Nederlands */
-  var KANJI_KEY = "weegdagboek.kanji";
-  var kanji = false;
-  try { kanji = localStorage.getItem(KANJI_KEY) === "1"; } catch (e) {}
-  var daysK = ["日","月","火","水","木","金","土"];
-  function md(m, d) { return kanji ? (m + 1) + "月" + d + "日" : d + " " + months[m]; }
-  function weekName(n) { return kanji ? "第" + n + "週" : "Week " + n; }
+  function md(m, d) { return lang === "ja" ? (m + 1) + "月" + d + "日" : d + " " + MONTHS[lang][m]; }
+  function weekName(n) { return L.weekName(n); }
   function shortDate(k) { var d = fromKey(k); return md(d.getMonth(), d.getDate()); }
   function longDate(k) {
     var d = fromKey(k);
-    if (kanji) return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日(" + daysK[d.getDay()] + ")";
-    return days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+    if (lang === "ja") return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日(" + DAYS.ja[d.getDay()] + ")";
+    return DAYS[lang][d.getDay()] + " " + d.getDate() + " " + MONTHS[lang][d.getMonth()] + " " + d.getFullYear();
   }
   function applyStatic() {
-    document.documentElement.lang = kanji ? "ja" : "nl";
-    Array.prototype.forEach.call(document.querySelectorAll("[data-k]"), function (n) {
-      if (!n.hasAttribute("data-nl")) n.setAttribute("data-nl", n.textContent);
-      n.textContent = kanji ? n.getAttribute("data-k") : n.getAttribute("data-nl");
-    });
-    var sw = document.getElementById("kanjiToggle");
-    if (sw) sw.setAttribute("aria-checked", kanji ? "true" : "false");
+    document.documentElement.lang = lang;
+    var each = function (sel, fn) { Array.prototype.forEach.call(document.querySelectorAll(sel), fn); };
+    each("[data-t]", function (n) { n.textContent = L[n.getAttribute("data-t")]; });
+    each("[data-t-html]", function (n) { n.innerHTML = L[n.getAttribute("data-t-html")]; });
+    each("[data-t-aria]", function (n) { n.setAttribute("aria-label", L[n.getAttribute("data-t-aria")]); });
+    each("[data-t-ph]", function (n) { n.setAttribute("placeholder", L[n.getAttribute("data-t-ph")]); });
+    each("[data-lang]", function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false"); });
   }
   function isoWeek(k) {
     var d = fromKey(k);
@@ -334,7 +525,7 @@ section.view { display: flex; }
   var lastWidgetJson = null;
   function pushWidget() {
     if (!loaded || !(window.WeegApp && WeegApp.widgetData)) return;
-    var json = JSON.stringify({ kanji: kanji, entries: entries });
+    var json = JSON.stringify({ lang: lang, kanji: lang === "ja", entries: entries });
     if (json === lastWidgetJson) return;
     lastWidgetJson = json;
     try { WeegApp.widgetData(json); } catch (e) {}
@@ -357,16 +548,16 @@ section.view { display: flex; }
     $("sLast").textContent = fmt(last.kg);
     var dl = $("sLastD");
     dl.className = "d"; dl.textContent = shortDate(last.date);
-    if (prev) { dl.textContent = kanji ? "前回比 " + signed(last.kg - prev.kg) : signed(last.kg - prev.kg) + " vs vorige"; dl.className = "d " + cls(last.kg - prev.kg); }
+    if (prev) { dl.textContent = L.vsPrev(signed(last.kg - prev.kg)); dl.className = "d " + cls(last.kg - prev.kg); }
     var cur = ws[ws.length - 1], pw = ws[ws.length - 2];
     $("sWeek").textContent = fmt(cur.avg);
     var dw = $("sWeekD");
-    dw.className = "d"; dw.textContent = kanji ? weekName(cur.week) + " · " + cur.n + "回" : "week " + cur.week + " · " + cur.n + "×";
-    if (pw) { dw.textContent = kanji ? weekName(pw.week) + "比 " + signed(cur.avg - pw.avg) : signed(cur.avg - pw.avg) + " vs wk " + pw.week; dw.className = "d " + cls(cur.avg - pw.avg); }
+    dw.className = "d"; dw.textContent = L.weekCount(cur.week, cur.n);
+    if (pw) { dw.textContent = L.vsWeek(signed(cur.avg - pw.avg), pw.week); dw.className = "d " + cls(cur.avg - pw.avg); }
     var first = entries[0], diff = last.kg - first.kg;
     $("sTotal").textContent = signed(diff);
     $("sTotal").className = "v " + cls(diff);
-    $("sTotalD").textContent = kanji ? shortDate(first.date) + "から" : "sinds " + shortDate(first.date);
+    $("sTotalD").textContent = L.since(shortDate(first.date));
   }
 
   var chartPts = [];
@@ -376,8 +567,8 @@ section.view { display: flex; }
     chartPts = [];
     if (!entries.length) {
       var e = el("div", { "class": "empty" });
-      e.appendChild(el("strong", null, loaded ? "Nog geen metingen" : "Metingen laden…"));
-      e.appendChild(el("span", null, loaded ? "Vul hierboven je eerste gewicht in. Na een paar dagen verschijnt hier je lijn." : ""));
+      e.appendChild(el("strong", null, loaded ? L.noMeasurements : L.loadingMeasurements));
+      e.appendChild(el("span", null, loaded ? L.firstHint : ""));
       box.appendChild(e);
       return;
     }
@@ -394,20 +585,20 @@ section.view { display: flex; }
     yMin = Math.floor((yMin - spanY * 0.1) / step) * step;
     yMax = Math.ceil((yMax + spanY * 0.1) / step) * step;
 
-    var W = 520, H = 260, L = 40, R = 12, T = 10, B = 26;
-    var sx = function (x) { return L + (x - x0) / (x1 - x0) * (W - L - R); };
+    var W = 520, H = 260, PL = 40, R = 12, T = 10, B = 26; // PL: marge links
+    var sx = function (x) { return PL + (x - x0) / (x1 - x0) * (W - PL - R); };
     var sy = function (y) { return T + (yMax - y) / (yMax - yMin) * (H - T - B); };
     var NS = "http://www.w3.org/2000/svg";
     var svg = document.createElementNS(NS, "svg");
     svg.setAttribute("id", "chart");
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     svg.setAttribute("role", "img");
-    svg.setAttribute("aria-label", "Grafiek van dagelijks gewicht en weekgemiddelde");
+    svg.setAttribute("aria-label", L.chartLabel);
     function s(tag, a) { var n = document.createElementNS(NS, tag); for (var k in a) n.setAttribute(k, a[k]); svg.appendChild(n); return n; }
 
     for (var y = yMin; y <= yMax + 1e-9; y += step) {
-      s("line", { x1: L, x2: W - R, y1: sy(y), y2: sy(y), stroke: "var(--line)", "stroke-width": 1 });
-      var t = s("text", { x: L - 6, y: sy(y) + 4, "text-anchor": "end" });
+      s("line", { x1: PL, x2: W - R, y1: sy(y), y2: sy(y), stroke: "var(--line)", "stroke-width": 1 });
+      var t = s("text", { x: PL - 6, y: sy(y) + 4, "text-anchor": "end" });
       t.textContent = fmt(y, step < 1 ? 1 : 0);
     }
     // x-labels: ongeveer 4-5 datums
@@ -451,7 +642,7 @@ section.view { display: flex; }
       cursor.setAttribute("x1", best.x); cursor.setAttribute("x2", best.x); cursor.setAttribute("visibility", "visible");
       ring.setAttribute("cx", best.x); ring.setAttribute("cy", sy(best.d.kg)); ring.setAttribute("visibility", "visible");
       var w = isoWeek(best.d.date), wa = ws.filter(function (x) { return x.id === w.id; })[0];
-      $("readout").textContent = longDate(best.d.date) + ": " + fmt(best.d.kg) + " kg" + (wa ? (kanji ? "  ·  " + weekName(w.week) + "平均: " : "  ·  gem. week " + w.week + ": ") + fmt(wa.avg) + " kg" : "");
+      $("readout").textContent = longDate(best.d.date) + ": " + fmt(best.d.kg) + " kg" + (wa ? L.readoutWeek(w.week) + fmt(wa.avg) + " kg" : "");
     }
     svg.addEventListener("pointerdown", pick);
     svg.addEventListener("pointermove", function (ev) { if (ev.pointerType === "mouse" || ev.buttons) pick(ev); });
@@ -461,10 +652,9 @@ section.view { display: flex; }
   function renderWeeks(ws) {
     var box = $("weeksBox");
     box.textContent = "";
-    if (!ws.length) { box.appendChild(el("p", { "class": "empty" }, loaded ? "Zodra je weegt, staat hier per week (ma–zo) je gemiddelde." : "Laden…")); return; }
+    if (!ws.length) { box.appendChild(el("p", { "class": "empty" }, loaded ? L.weeksEmpty : L.loading)); return; }
     var tbl = el("table"), th = el("thead"), hr = el("tr");
-    (kanji ? [["週", ""], ["平均", "r"], ["差", "r"], ["測定", "r"]]
-           : [["Week", ""], ["Gemiddeld", "r"], ["Verschil", "r"], ["Metingen", "r"]]).forEach(function (h) { hr.appendChild(el("th", h[1] ? { "class": h[1] } : null, h[0])); });
+    L.weekHeads.forEach(function (h, i) { hr.appendChild(el("th", i ? { "class": "r" } : null, h)); });
     th.appendChild(hr); tbl.appendChild(th);
     var tb = el("tbody");
     ws.slice().reverse().slice(0, 12).forEach(function (w) {
@@ -486,7 +676,7 @@ section.view { display: flex; }
   function renderList() {
     var box = $("listBox");
     box.textContent = "";
-    if (!entries.length) { box.appendChild(el("p", { "class": "empty" }, loaded ? "Nog niets opgeslagen." : "Laden…")); return; }
+    if (!entries.length) { box.appendChild(el("p", { "class": "empty" }, loaded ? L.listEmpty : L.loading)); return; }
     var tbl = el("table"), tb = el("tbody");
     entries.slice().reverse().slice(0, listLimit).forEach(function (e, i, arr) {
       var tr = el("tr");
@@ -496,14 +686,14 @@ section.view { display: flex; }
       var diff = prev ? e.kg - prev.kg : null;
       tr.appendChild(el("td", { "class": "r " + (diff == null ? "" : cls(diff)) }, diff == null ? "" : signed(diff)));
       var c = el("td", { "class": "r" });
-      var b = el("button", { type: "button", "class": "del" + (pendingDelete === e.date ? " confirm" : ""), "aria-label": "Verwijder meting van " + longDate(e.date) }, pendingDelete === e.date ? (kanji ? "確認?" : "Zeker?") : (kanji ? "削除" : "Verwijder"));
+      var b = el("button", { type: "button", "class": "del" + (pendingDelete === e.date ? " confirm" : ""), "aria-label": L.deleteLabel(longDate(e.date)) }, pendingDelete === e.date ? L.sure : L.del);
       b.addEventListener("click", function () { onDelete(e.date); });
       c.appendChild(b); tr.appendChild(c);
       tb.appendChild(tr);
     });
     tbl.appendChild(tb); box.appendChild(tbl);
     if (entries.length > listLimit) {
-      var more = el("button", { type: "button", "class": "more" }, "Toon meer");
+      var more = el("button", { type: "button", "class": "more" }, L.showMore);
       more.addEventListener("click", function () { listLimit += 30; renderList(); });
       box.appendChild(more);
     }
@@ -521,16 +711,16 @@ section.view { display: flex; }
     ev.preventDefault();
     var raw = $("kg").value.trim().replace(",", ".");
     var kg = Number(raw), date = $("date").value;
-    if (!raw || !isFinite(kg) || kg < 20 || kg > 400) { setMsg("Vul een gewicht in kilo's in, bijvoorbeeld 78,4.", true); $("kg").focus(); return; }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { setMsg("Kies een datum.", true); return; }
-    if (date > toKey(new Date())) { setMsg("Die datum ligt in de toekomst.", true); return; }
+    if (!raw || !isFinite(kg) || kg < 20 || kg > 400) { setMsg(L.errWeight, true); $("kg").focus(); return; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { setMsg(L.errDate, true); return; }
+    if (date > toKey(new Date())) { setMsg(L.errFuture, true); return; }
     kg = Math.round(kg * 10) / 10;
     var existed = entries.some(function (e) { return e.date === date; });
     var before = JSON.stringify(store);
     upsertLocal(date, kg);
-    if (!persist()) { store = JSON.parse(before); derive(); setMsg("Opslaan mislukt: deze browser staat lokale opslag niet toe (privévenster?).", true); return; }
+    if (!persist()) { store = JSON.parse(before); derive(); setMsg(L.errStorage, true); return; }
     render();
-    setMsg((existed ? "Bijgewerkt: " : "Opgeslagen: ") + fmt(kg) + " kg op " + longDate(date) + ".");
+    setMsg(L.saved(existed, fmt(kg), longDate(date)));
     $("kg").value = "";
     scheduleSync();
   });
@@ -541,17 +731,17 @@ section.view { display: flex; }
     var before = JSON.stringify(store);
     store[date] = { del: true, t: Date.now() };
     derive();
-    if (!persist()) { store = JSON.parse(before); derive(); setMsg("Verwijderen mislukt.", true); renderList(); return; }
+    if (!persist()) { store = JSON.parse(before); derive(); setMsg(L.delFailed, true); renderList(); return; }
     render();
-    setMsg("Meting van " + longDate(date) + " verwijderd.");
+    setMsg(L.deleted(longDate(date)));
     scheduleSync();
   }
 
-  Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (b) {
+  Array.prototype.forEach.call(document.querySelectorAll(".seg button[data-range]"), function (b) {
     b.addEventListener("click", function () {
       range = +b.getAttribute("data-range");
-      Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
-      $("readout").textContent = "Tik op de grafiek om een dag te bekijken.";
+      Array.prototype.forEach.call(document.querySelectorAll(".seg button[data-range]"), function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
+      $("readout").textContent = L.tapChart;
       renderChart(weeks());
     });
   });
@@ -610,7 +800,7 @@ section.view { display: flex; }
     }
     if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
   } catch (e) {
-    status("Deze browser staat lokale opslag niet toe. Metingen worden niet bewaard.");
+    status(L.noStorage);
   }
   derive();
   loaded = true;
@@ -631,15 +821,15 @@ section.view { display: flex; }
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
   }
   $("exportJson").addEventListener("click", function () {
-    if (!entries.length) { bMsg("Er is nog niets om op te slaan.", true); return; }
+    if (!entries.length) { bMsg(L.nothingToSave, true); return; }
     download("weegdagboek-" + toKey(new Date()) + ".json", JSON.stringify({ app: "weegdagboek", version: 2, entries: entries, store: store }, null, 1), "application/json");
-    bMsg("Back-up met " + entries.length + " metingen klaargezet.");
+    bMsg(L.backupReady(entries.length));
   });
   $("exportCsv").addEventListener("click", function () {
-    if (!entries.length) { bMsg("Er is nog niets om te exporteren.", true); return; }
-    var rows = ["datum;gewicht_kg;week"].concat(entries.map(function (e) { return e.date + ";" + String(e.kg).replace(".", ",") + ";" + isoWeek(e.date).id; }));
+    if (!entries.length) { bMsg(L.nothingToExport, true); return; }
+    var rows = [L.csvHeader].concat(entries.map(function (e) { return e.date + ";" + (lang === "nl" ? String(e.kg).replace(".", ",") : String(e.kg)) + ";" + isoWeek(e.date).id; }));
     download("weegdagboek-" + toKey(new Date()) + ".csv", "﻿" + rows.join("\r\n"), "text/csv");
-    bMsg("CSV gedownload. Je kunt het openen in Excel of Numbers.");
+    bMsg(L.csvDone);
   });
   $("importFile").addEventListener("change", function () {
     var f = this.files && this.files[0];
@@ -655,12 +845,12 @@ section.view { display: flex; }
         if (!n) throw new Error("leeg");
         var before = JSON.stringify(store);
         mergeInto(store, incoming); derive();
-        if (!persist()) { store = JSON.parse(before); derive(); bMsg("Terugzetten mislukt: lokale opslag is niet beschikbaar.", true); return; }
+        if (!persist()) { store = JSON.parse(before); derive(); bMsg(L.restoreFailed, true); return; }
         render();
-        bMsg("Back-up ingelezen. Je hebt nu " + entries.length + " metingen.");
+        bMsg(L.restored(entries.length));
         scheduleSync();
       } catch (e) {
-        bMsg("Dit bestand is geen geldige back-up van het Weegdagboek.", true);
+        bMsg(L.notBackup, true);
       }
     };
     r.readAsText(f);
@@ -699,8 +889,8 @@ section.view { display: flex; }
     $("ncWaiting").hidden = view !== "waiting";
     $("ncLinked").hidden = view !== "linked";
     if (view === "linked" && nc) {
-      $("ncWhere").textContent = nc.user + " · map " + (nc.folder || "/") + " · " + nc.server.replace(/^https?:\/\//i, "");
-      $("ncLast").textContent = nc.last ? "Laatst gesynchroniseerd: " + new Date(nc.last).toLocaleString("nl-NL", { dateStyle: "medium", timeStyle: "short" }) : "Nog niet gesynchroniseerd.";
+      $("ncWhere").textContent = L.ncWhere(nc.user, nc.folder || "/", nc.server.replace(/^https?:\/\//i, ""));
+      $("ncLast").textContent = nc.last ? L.ncLast(new Date(nc.last).toLocaleString(LOCALE[lang], { dateStyle: "medium", timeStyle: "short" })) : L.ncNever;
     }
   }
   function scheduleSync() {
@@ -709,21 +899,21 @@ section.view { display: flex; }
     syncTimer = setTimeout(sync, 1500);
   }
   function explain(r) {
-    if (r.status === 0) return "Geen verbinding met de server. Je metingen staan veilig op je telefoon en gaan mee bij de volgende synchronisatie.";
-    if (r.status === -1) return "De koppeling is niet meer geldig. Ontkoppel en log opnieuw in.";
-    if (r.status === 401) return "Nextcloud weigert de toegang. Is het app-wachtwoord ingetrokken? Ontkoppel en log opnieuw in.";
-    if (r.status === 404 || r.status === 409) return "De map \"" + nc.folder + "\" kon niet worden aangemaakt in je Nextcloud. Controleer of de naam klopt en of je daar mag schrijven.";
-    return "De server gaf een foutmelding (" + r.status + ").";
+    if (r.status === 0) return L.ncOffline;
+    if (r.status === -1) return L.ncInvalid;
+    if (r.status === 401) return L.ncDenied;
+    if (r.status === 404 || r.status === 409) return L.ncFolderErr(nc.folder);
+    return L.ncServerErr(r.status);
   }
   function sync() {
     if (!nc || !bridge) return Promise.resolve(false);
     if (syncing) { syncAgain = true; return Promise.resolve(false); }
     syncing = true;
-    ncMsg("Bezig met synchroniseren…");
+    ncMsg(L.ncSyncing);
     var remote = {};
     return httpReq("GET").then(function (r) {
       if (r.status === 200) {
-        try { var obj = JSON.parse(r.body); remote = cleanStore(obj.store || {}); } catch (e) { throw { msg: "Het bestand weegdagboek.json op je server is beschadigd. Ik heb niets overschreven." }; }
+        try { var obj = JSON.parse(r.body); remote = cleanStore(obj.store || {}); } catch (e) { throw { msg: L.ncBroken }; }
       } else if (r.status !== 404) {
         throw { msg: explain(r) };
       }
@@ -741,10 +931,10 @@ section.view { display: flex; }
       });
     }).then(function (res) {
       nc.last = Date.now(); savePrefs(); showNc("linked");
-      ncMsg(res.down && res.up ? "Gesynchroniseerd in beide richtingen." : res.down ? "Nieuwe metingen van je server opgehaald." : res.up ? "Opgeslagen op je Nextcloud." : "Alles is al bijgewerkt.");
+      ncMsg(res.down && res.up ? L.ncBoth : res.down ? L.ncDown : res.up ? L.ncUp : L.ncUpToDate);
       return true;
     }).catch(function (e) {
-      ncMsg(e && e.msg ? e.msg : "Synchroniseren mislukt.", true);
+      ncMsg(e && e.msg ? e.msg : L.ncFailed, true);
       return false;
     }).then(function (ok) {
       syncing = false;
@@ -753,26 +943,18 @@ section.view { display: flex; }
     });
   }
 
-  var LOGIN_ERRORS = {
-    not_nextcloud: "Op dit adres is geen Nextcloud gevonden. Controleer het serveradres.",
-    network: "De server is niet bereikbaar. Controleer het adres en je verbinding.",
-    timeout: "Inloggen duurde te lang (meer dan 20 minuten). Probeer het opnieuw.",
-    host: "De server stuurde een onverwacht adres terug. Uit voorzorg is het inloggen gestopt.",
-    failed: "Inloggen is niet gelukt. Probeer het opnieuw."
-  };
   var pendingFolder = "Weegdagboek";
   window.__weegLoginWaiting = function () { showNc("waiting"); ncMsg(""); };
   window.__weegLogin = function (res) {
     $("ncConnect").disabled = false;
-    if (!res || !res.ok) { showNc("setup"); ncMsg(LOGIN_ERRORS[res && res.error] || LOGIN_ERRORS.failed, true); return; }
+    if (!res || !res.ok) { showNc("setup"); ncMsg(L.login[res && res.error] || L.login.failed, true); return; }
     nc = { server: res.server, user: res.user, folder: pendingFolder, last: 0 };
     savePrefs(); showNc("linked");
     sync();
   };
   window.__weegUnlinked = function (revoked) {
     nc = null; savePrefs(); showNc("setup");
-    ncMsg(revoked ? "Ontkoppeld en het app-wachtwoord is ingetrokken in Nextcloud. Je metingen staan nog op je telefoon en je server."
-                  : "Ontkoppeld op je telefoon. Intrekken in Nextcloud lukte niet; verwijder \"Weegdagboek\" zelf bij Instellingen › Beveiliging.");
+    ncMsg(revoked ? L.ncRevoked : L.ncLocalOnly);
   };
 
   if (!bridge) {
@@ -791,31 +973,31 @@ section.view { display: flex; }
     } else {
       if (prefs.folder) $("ncFolder").value = prefs.folder;
       showNc("setup");
-      if (legacy) ncMsg("De koppeling is vernieuwd en veiliger gemaakt. Log één keer opnieuw in bij Nextcloud.");
+      if (legacy) ncMsg(L.ncRelogin);
     }
     var confirmHttp = false;
     $("ncForm").addEventListener("submit", function (ev) {
       ev.preventDefault();
       var server = $("ncServer").value.trim();
       var folder = ($("ncFolder").value.trim() || "Weegdagboek").replace(/^\/+|\/+$/g, "");
-      if (!server) { ncMsg("Vul het adres van je Nextcloud in.", true); return; }
-      if (/^http:\/\//i.test(server) && !confirmHttp) { confirmHttp = true; ncMsg("Let op: met http:// gaat je app-wachtwoord onversleuteld over het netwerk. Tik nogmaals om toch door te gaan, of gebruik https://.", true); return; }
+      if (!server) { ncMsg(L.ncNeedServer, true); return; }
+      if (/^http:\/\//i.test(server) && !confirmHttp) { confirmHttp = true; ncMsg(L.ncHttp, true); return; }
       pendingFolder = folder;
       $("ncConnect").disabled = true;
-      ncMsg("Verbinden met je Nextcloud…");
+      ncMsg(L.ncConnecting);
       WeegApp.ncStartLogin(server);
     });
     $("ncCancel").addEventListener("click", function () {
       WeegApp.ncCancelLogin();
       $("ncConnect").disabled = false;
-      showNc("setup"); ncMsg("Inloggen geannuleerd.");
+      showNc("setup"); ncMsg(L.ncCancelled);
     });
     $("ncSyncNow").addEventListener("click", function () { sync(); });
     var unlinkArmed = false;
     $("ncUnlink").addEventListener("click", function () {
-      if (!unlinkArmed) { unlinkArmed = true; this.textContent = "Zeker? Tik nogmaals"; return; }
-      unlinkArmed = false; this.textContent = "Ontkoppelen";
-      ncMsg("Bezig met ontkoppelen…");
+      if (!unlinkArmed) { unlinkArmed = true; this.textContent = L.ncUnlinkSure; return; }
+      unlinkArmed = false; this.textContent = L.unlink;
+      ncMsg(L.ncUnlinking);
       WeegApp.ncUnlink();
     });
     document.addEventListener("visibilitychange", function () { if (!document.hidden && nc) scheduleSync(); });
@@ -892,14 +1074,19 @@ section.view { display: flex; }
   window.addEventListener("hashchange", route);
   route();
 
-  /* ---------- kanji aan/uit ---------- */
-  $("kanjiToggle").addEventListener("click", function () {
-    kanji = !kanji;
-    try { localStorage.setItem(KANJI_KEY, kanji ? "1" : "0"); } catch (e) {}
-    applyStatic();
-    render();
+  /* ---------- taalkeuze: NL, EN, JP ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-lang]"), function (b) {
+    b.addEventListener("click", function () {
+      lang = b.getAttribute("data-lang");
+      L = STR[lang];
+      try { localStorage.setItem(LANG_KEY, lang); localStorage.removeItem(KANJI_KEY); } catch (e) {}
+      applyStatic();
+      if (nc) showNc("linked");
+      render();
+    });
   });
-  if (kanji) { applyStatic(); render(); }
+  applyStatic();
+  render();
 })();
 </script>
 </body>
