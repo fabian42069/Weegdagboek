@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Weegschaal met wijzer en "kg", Arcticons-stijl: mauve lijn, geen achtergrond.
-     Getekend op een 48-raster en zo geschaald dat de weegschaal 62dp van het 108dp-vlak beslaat (even groot als de Arcticons-iconen op het startscherm); lijn 1.5dp. -->
+<!-- Made by fabians-app-store/tools/make-icons.py: edit the drawing there, not here. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <group android:translateX="8.909" android:translateY="8.909" android:scaleX="1.8788" android:scaleY="1.8788">
-        <path android:pathData="M14.5,7.5H33.5A7,7 0 0,1 40.5,14.5V33.5A7,7 0 0,1 33.5,40.5H14.5A7,7 0 0,1 7.5,33.5V14.5A7,7 0 0,1 14.5,7.5Z" android:strokeColor="#FFC6A0F6" android:strokeWidth="0.798" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-        <path android:pathData="M15.5,23.5A8.5,8.5 0 0,1 32.5,23.5M15.5,23.5H32.5" android:strokeColor="#FFC6A0F6" android:strokeWidth="0.798" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-        <path android:pathData="M24,23.5L27.2,17.9" android:strokeColor="#FFC6A0F6" android:strokeWidth="0.798" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-        <path android:pathData="M19.8,28.5V34.5M22.8,30.6L19.8,33.2M21.2,32L23,34.5" android:strokeColor="#FFC6A0F6" android:strokeWidth="0.798" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-        <path android:pathData="M25.3,32.1A1.6,1.6 0 1,0 28.5,32.1A1.6,1.6 0 1,0 25.3,32.1ZM28.5,30.5V34.9A1.7,1.7 0 0,1 26.8,36.6H25.5" android:strokeColor="#FFC6A0F6" android:strokeWidth="0.798" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+    <group android:translateX="-0.444" android:translateY="-4.528" android:scaleX="2.2685" android:scaleY="2.2685">
+        <path android:pathData="M15.5,23.5A8.5,8.5 0 0,1 32.5,23.5M15.5,23.5H32.5" android:strokeColor="#FFC6A0F6" android:strokeWidth="0.661" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+        <path android:pathData="M24,23.5L27.2,17.9" android:strokeColor="#FFC6A0F6" android:strokeWidth="0.661" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+        <path android:pathData="M19.8,28.5V34.5M22.8,30.6L19.8,33.2M21.2,32L23,34.5" android:strokeColor="#FFC6A0F6" android:strokeWidth="0.661" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+        <path android:pathData="M25.3,32.1A1.6,1.6 0 1,0 28.5,32.1A1.6,1.6 0 1,0 25.3,32.1ZM28.5,30.5V34.9A1.7,1.7 0 0,1 26.8,36.6H25.5" android:strokeColor="#FFC6A0F6" android:strokeWidth="0.661" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
     </group>
 </vector>
